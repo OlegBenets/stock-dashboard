@@ -1,12 +1,8 @@
 <template>
     <nav class="navbar">
-        <div class="single-company"></div>
-        <div class="single-company"></div>
-        <div class="single-company"></div>
-        <div class="single-company"></div>
-        <div class="single-company"></div>
-        <div class="single-company"></div>
-        <div class="single-company"></div>
+      <div v-for="(company, index) in companies" :key="index" class="single-company">
+        <h2>{{ company.name }}</h2>
+      </div>
     </nav>
   </template>
   
@@ -14,18 +10,22 @@
   
   export default {
     name: 'NavBarCard',
+    props: {
+    companies: {
+      type: Array,
+      required: true,
+    },
+  },
   }
   </script>
   
   <style scoped>
   .navbar {
-    position: absolute;
-    top: 155px;
-    left: 100px;
     display: flex;
     align-items: center;
-    justify-content: space-evenly;
-    width: calc(90vw - 48px);
+    justify-content: flex-start;
+    gap: 24px;
+    width: calc(1240px - 48px);
     height: calc(200px - 48px);
     border-radius: 20px;
     padding: 24px;
@@ -38,5 +38,19 @@
     border-radius: 16px;
     padding: 20px 24px;
     background-color: #011F35;
+  }
+
+  h2 {
+    font-size: 20px;
+    font-weight: 500;
+    color: white;
+    margin: 0  
+  }
+
+  @media (max-width: 1440px) {
+    .navbar {
+    width: calc(100% - 48px);
+  }
+
   }
   </style>

@@ -3,41 +3,45 @@
     <img src="./assets/img/Rectangle 1.png" alt="rectangle image">
     <h1>The Magnificent Seven Companies</h1>
   </header>
-  <NavBarCard></NavBarCard>
-  <div class="big-cards-container">
-    <CustomCard></CustomCard>
-    <CustomCard></CustomCard>
-  </div>
+  <NavBarCard :companies="companies"/>
+  <ChartsCard />
 </template>
 
 <script>
-  import CustomCard from "./components/CustomCard.vue"
   import NavBarCard from "./components/NavBar.vue";
   import { stockService } from "./services/stock-service";
   import './main.css';
+  import ChartsCard from "./components/ChartsCard.vue";
 
 export default {
   name: 'App',
   components: {
-    CustomCard,
+    ChartsCard,
     NavBarCard,
   },
 
   data() {
     return {
-      companies: ['AAPL', 'MSFT', 'TSLA', 'NVDA', 'AMZN', 'META', 'GOOG'],
+      companies: [],
       companyData: [],
     }
   },
 
   async created() {
-    const promises = this.companies.map(async (ticker) => {
-    const data = await stockService.getRevenue(`$${ticker}`);
-      console.log( ticker, data);
+    const tickers = ['AAPL', 'MSFT', 'TSLA', 'NVDA', 'AMZN', 'META', 'GOOG'];
+
+    this.companies = tickers.map(ticker => ({
+      ticker,
+      name: stockService.getCompanyName(ticker),
+    }));
+
+    const promises = tickers.map(async (ticker) => {
+    // const data = 
+    await stockService.getRevenue(`$${ticker}`);
+      // console.log( ticker, data);
     });
     this.companyData = await Promise.all(promises);
-    console.log(this.companyData);
-    
+    // console.log(this.companyData);
   }
 }
 
@@ -65,18 +69,14 @@ h1 {
   color: #F9F9F9;
 }
 
-.big-cards-container {
-  display: flex;
-  position: absolute;
-  top: 380px;
-  left: 100px;
-}
-
 #app {
+  display: flex;
+  flex-direction: column;
+  gap: 100px;
   box-sizing: border-box;
   width: 100vw;
   min-height: 100vh;
-  padding: 100px;
+  padding: 200px 100px 100px 100px;
   background: radial-gradient(71.11% 100% at 50% 0%, #020204 14.6%, #011F35 100%);
 }
 </style>
