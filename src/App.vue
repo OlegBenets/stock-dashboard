@@ -3,8 +3,21 @@
     <img src="./assets/img/Rectangle 1.png" alt="rectangle image">
     <h1>The Magnificent Seven Companies</h1>
   </header>
-  <NavBarCard :companies="companies"/>
-  <ChartsCard />
+  <NavBarCard :companies="companyData"/>
+  <ChartsCard :companyData="companyData"/>
+
+  <div v-for="company in companyData" :key="company.ticker" class="company-card">
+    <h2>{{ company.name }}</h2>
+    <img :src="require(`@/assets/img/${company.image}`)" :alt="company.name">
+    <h3>Revenue: {{ company.revenue}}</h3>
+    <h3>Net Income: {{ company.netIncome}}</h3>
+    <h3>Gross Margin: {{ company.grossMargin}}</h3>
+    <h3>Quarters: {{ company.quarters }}</h3>
+  </div>
+
+<div style="display: flex">
+  <a target="_blank" href="https://icons8.com/icon/yqf95864UzeQ/nvidia">nvidia</a> Icon von <a target="_blank" href="https://icons8.com">Icons8</a>
+</div>
 </template>
 
 <script>
@@ -22,29 +35,29 @@ export default {
 
   data() {
     return {
-      companies: [],
       companyData: [],
     }
   },
 
   async created() {
-    const tickers = ['AAPL', 'MSFT', 'TSLA', 'NVDA', 'AMZN', 'META', 'GOOG'];
+    try {
+      const companies = stockService.getCompanies();
 
-    this.companies = tickers.map(ticker => ({
-      ticker,
-      name: stockService.getCompanyName(ticker),
-    }));
+      const promises = companies.map(async (company) => {
+        const data = await stockService.getCompanyData(company.ticker);
+        return {
+          ...company,
+          ...data
+        };
+      });
 
-    const promises = tickers.map(async (ticker) => {
-    // const data = 
-    await stockService.getRevenue(`$${ticker}`);
-      // console.log( ticker, data);
-    });
-    this.companyData = await Promise.all(promises);
-    // console.log(this.companyData);
+      this.companyData = await Promise.all(promises);
+      console.log(this.companyData);
+    } catch (error) {
+      console.error('Error loading company data:', error);
+    }
   }
 }
-
 </script>
 
 <style>
@@ -78,5 +91,10 @@ h1 {
   min-height: 100vh;
   padding: 200px 100px 100px 100px;
   background: radial-gradient(71.11% 100% at 50% 0%, #020204 14.6%, #011F35 100%);
+}
+
+.company-card {
+  margin-bottom: 20px;
+  color: white;
 }
 </style>

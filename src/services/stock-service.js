@@ -1,31 +1,81 @@
 import axios from 'axios';
 
-const order = [
-    'Mar 21',
-    'Jun 21',
-    'Sep 21',
-    'Dec 21',
-    'Mar 22',
-    'Jun 22',
-    'Sep 22',
-    'Dec 22',
-    'Mar 23',
-    '3 Aug 23',
-    '2 Nov 23',
-    '1 Feb 24',
-    '2 Mai 24',
-    '1 Aug 24',
-];
 
-const companyNameMapping = {
-    AAPL: "Apple",
-    MSFT: "Microsoft",
-    TSLA: "Tesla",
-    NVDA: "NVIDIA",
-    AMZN: "Amazon",
-    META: "Meta",
-    GOOG: "Alphabet"
-};
+// const order = [
+//     'Mar 21',
+//     'Jun 21',
+//     'Sep 21',
+//     'Dec 21',
+//     'Mar 22',
+//     'Jun 22',
+//     'Sep 22',
+//     'Dec 22',
+//     'Mar 23',
+//     '3 Aug 23',
+//     '2 Nov 23',
+//     '1 Feb 24',
+//     '2 Mai 24',
+//     '1 Aug 24',
+// ];
+
+const companies = [
+    {
+        name: 'Apple',
+        ticker: 'AAPL',
+        image: 'apple.png',
+        revenueRow: 5,
+        netIncomeRow: 36,
+        grossMarginRow: 23
+    },
+    {
+        name: 'Amazon',
+        ticker: 'AMZN',
+        image: 'amazon.png',
+        revenueRow: 9,
+        netIncomeRow: 41,
+        grossMarginRow: 15
+    },
+    {
+        name: 'Alphabet',
+        ticker: 'GOOG',
+        image: 'google.png',
+        revenueRow: 5,
+        netIncomeRow: 41,
+        grossMarginRow: 25
+    },
+    {
+        name: 'Meta',
+        ticker: 'META',
+        image: 'meta.png',
+        revenueRow: 5,
+        netIncomeRow: 27,
+        grossMarginRow: 11
+    },
+    {
+        name: 'Microsoft',
+        ticker: 'MSFT',
+        image: 'microsoft.png',
+        revenueRow: 9,
+        netIncomeRow: 30,
+        grossMarginRow: 15
+    },
+    {
+        name: 'Nvidia',
+        ticker: 'NVDA',
+        image: 'nvidia.png',
+        revenueRow: 5,
+        netIncomeRow: 29,
+        grossMarginRow: 11
+    },
+    {
+        name: 'Tesla',
+        ticker: 'TSLA',
+        image: 'tesla.png',
+        revenueRow: 13,
+        netIncomeRow: 44,
+        grossMarginRow: 26
+    }
+];
 
 class StockService {
     constructor() {
@@ -40,18 +90,43 @@ class StockService {
             console.log('Datenstruktur:', response.data);
             return response.data;
         } catch (error) {
-            console.error('Erro fetching data:', error);
+            console.error('Error fetching data:', error);
             return [];
         }
     }
 
-    async getRevenue(sheetName) {
-        const data = await this.fetchData(sheetName);
-        return order.map(key => data[3][key]);
+    getCompanies() {
+        return companies;
     }
-    
-    getCompanyName(ticker) {
-        return companyNameMapping[ticker] || "Unknown Company";
+
+    getCompanyConfig(ticker) {
+        return companies.find(company => company.ticker === ticker) || {};
+    }
+
+    async getCompanyData(ticker) {
+        const config = this.getCompanyConfig(ticker);
+        if (!config) {
+            console.error('Configuration not found for ticker:', ticker);
+            return {
+                revenue: [],
+                netIncome: [],
+                grossMargin: [],
+                quarters: [],
+            };
+        }
+
+        const data = await this.fetchData(`$${ticker}`);
+        const revenue = data[config.revenueRow] || [];
+        const netIncome = data[config.netIncomeRow] || [];
+        const grossMargin = data[config.grossMarginRow] || [];
+        const quarters = data[1] || [];
+
+        return {
+            revenue,
+            netIncome,
+            grossMargin,
+            quarters
+        };
     }
 }
 

@@ -26,17 +26,8 @@ export default {
   data() {
     return {
       chartData: {
-        labels: ['January', 'February', 'March'],
-        datasets: [
-          {
-            label: 'Sales',
-            data: [40, 20, 12],
-            borderColor: '#42A5F5',
-            backgroundColor: 'rgba(66, 165, 245, 0.2)',
-            fill: true,
-            tension: 0.1
-          }
-        ]
+        labels: [],
+        datasets: []
       },
       chartOptions: {
         responsive: true,
@@ -60,10 +51,17 @@ export default {
             beginAtZero: true
           }
         }
-      }
+      },
+      colors: [
+        "#39DAFF", "#31BFE2", "#29A5C5", "#218AA8", "#196F8C", "#11546F", "#093A52"
+      ]
     };
-  }
+  },
+
+  
 }
+
+
 </script>
 
 <style scoped>
